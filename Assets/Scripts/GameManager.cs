@@ -1,0 +1,84 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+    public LayerMask layerCar;
+    public GameObject car;
+    public int indexLevel;
+    public bool isAccident;
+    public float speedRun;
+    private Camera cam;
+
+    public static GameManager instance;
+    private void Awake()
+    {
+        isAccident = false;
+        instance = this;
+        indexLevel = PlayerPrefs.GetInt("indexLevel");
+    }
+    private void Start()
+    {
+        Application.targetFrameRate = 120;
+        cam = Camera.main;
+    }
+    private void Update()
+    {
+        Click();
+    }
+    private void Click()
+    {
+        if (Input.GetMouseButtonDown(0) && !isAccident)
+        {
+            Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward, Mathf.Infinity, layerCar);
+            if (hit.collider != null)
+            {
+                car = hit.collider.gameObject;
+                TagGameObject tag = car.GetComponent<TagGameObject>();
+                if (tag != null && tag.tagValue == "Car")
+                {
+                    CarController carController = car.GetComponent<CarController>();
+                    carController.isMove = true;
+                    carController.type = TypeAI.PLAYER;
+                }
+            }
+        }
+    }
+    public void NextLevel()
+    {
+        if (indexLevel < GlobalData.MAXLEVEL - 1)
+        {
+            Debug.Log("Next Level");
+            indexLevel++;
+            PlayerPrefs.SetInt("indexLevel", indexLevel);
+            SceneManager.LoadScene(0);
+        }
+        else
+        {
+            Debug.Log("Max Level");
+        }
+
+    }
+    public void BackLevel()
+    {
+        if (indexLevel > 0)
+        {
+            Debug.Log("Back Level");
+            indexLevel--;
+            PlayerPrefs.SetInt("indexLevel", indexLevel);
+            SceneManager.LoadScene(0);
+        }
+        else
+        {
+            Debug.Log("Level 0");
+        }
+    }
+
+    public void setIsAccident(bool set)
+    {
+        isAccident = set;    
+    }
+}
