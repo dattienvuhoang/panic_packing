@@ -25,4 +25,6 @@ public class CarInfo
     public Vector3 rotation, rotationCarLot;
     public List<Vector3> points;
     public List<Direction> diection;
+    public List<Vector3> lightPos;
+    public TypeLight typeLight;
 }

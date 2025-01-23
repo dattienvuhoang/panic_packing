@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public List<GameObject> lights;
+    
     public LayerMask layerCar;
     public GameObject car;
     public int indexLevel;
     public bool isAccident;
     public float speedRun;
     private Camera cam;
-
+    private GameObject[] _gameObjects;
     public static GameManager instance;
     private void Awake()
     {
@@ -23,6 +26,11 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 120;
         cam = Camera.main;
+       _gameObjects = GameObject.FindGameObjectsWithTag("Light");
+       foreach (var o in  _gameObjects)
+       {
+           lights.Add(o);
+       }
     }
     private void Update()
     {
@@ -80,5 +88,39 @@ public class GameManager : MonoBehaviour
     public void setIsAccident(bool set)
     {
         isAccident = set;    
+    }
+
+    public IEnumerator Shake(float duration, float magnitude)
+    {
+        Vector3 originalPosition = cam.transform.localPosition;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float x = Random.Range(-1f, 1f) * magnitude;
+            float y = Random.Range(-1f, 1f) * magnitude;
+
+            cam.transform.localPosition = new Vector3(originalPosition.x + x, originalPosition.y + y, originalPosition.z);
+
+            elapsed += Time.deltaTime;
+
+            yield return null; 
+        }
+
+        cam.transform.localPosition = originalPosition;
+    }
+
+    public void ShakeCam(float duration, float magnitude)
+    {
+        StartCoroutine(Shake(duration, magnitude));
+    }
+
+    public void ChangeLight()
+    {
+        for (int i = 0; i < lights.Count; i++)
+        {
+            lights[i].GetComponent<LightController>().ChangeLight();    
+        }
     }
 }

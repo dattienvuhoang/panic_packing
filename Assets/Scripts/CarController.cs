@@ -11,6 +11,8 @@ public enum TypeAI
 {
     PLAYER, BOT
 };
+
+
 public class CarController : MonoBehaviour
 {
     public GameObject carFake;
@@ -23,6 +25,7 @@ public class CarController : MonoBehaviour
     public int index, count;
     public Vector3 direct;
     public Coroutine stop;
+    public bool isLight = false;
     Tween carCurrentTween, carFakeCurrentTwwen, rotateTween ;
     private void Start()
     {
@@ -48,7 +51,7 @@ public class CarController : MonoBehaviour
                  
                 // Tinh thoi gian de van toc bang nhau 
                 float timeCar = Vector3.Distance(transform.position, listPos[index].position) / GameManager.instance.speedRun;
-                Debug.Log("Time Car: " + timeCar);
+                //Debug.Log("Time Car: " + timeCar);
                 carCurrentTween = transform.DOMove(listPos[index].position, timeCar).SetEase(Ease.Linear);
                 carFakeCurrentTwwen = carFake.transform.DOMove(listPos[index].position, timeCar-0.1f).SetEase(Ease.Linear).OnComplete(() =>
                 {
@@ -56,6 +59,10 @@ public class CarController : MonoBehaviour
                     if (line.points.Count == 1)
                     {
                         type = TypeAI.BOT;
+                        if (!isLight)
+                        {
+                            GameManager.instance.ChangeLight();
+                        }
                     }
                 });
             }
@@ -66,12 +73,10 @@ public class CarController : MonoBehaviour
         }
         if (listPos.Count != 0)
         {
-            //if (Vector3.Distance(transform.position, listPos[index].transform.position) < 0.1f)
             if (Vector3.Distance(transform.position, listPos[index].position) < 0.1f)
             {
                 if (index < listDirection.Count)
                 {
-                    //transform.position = listPos[index].transform.position;
                     index++;
                     isMove = true;
                     {
@@ -99,17 +104,11 @@ public class CarController : MonoBehaviour
         }
     }
 
-    IEnumerator DeleyDelPoint()
-    {
-        yield return new WaitForSeconds(0.05f);
-        line.DelPoint();
-    }
-
     public void Move()
     {
         isMove = true;
     }
-    public void Rotate()
+    /*public void Rotate()
     {
         if (isRotate)
         {
@@ -128,16 +127,18 @@ public class CarController : MonoBehaviour
 
             }
         }
-    }
+    }*/
     
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
         if (collision.gameObject.GetComponent<TagGameObject>() != null)
         {
+            Debug.Log("Hit");
             TagGameObject tag = collision.gameObject.GetComponent<TagGameObject>();
             if (tag.tagValue == "Car")
             {
+                Debug.Log("Car Hit");
                 direct = transform.position - collision.gameObject.transform.position;
                 if (collision.transform.GetComponent<CarController>().isLeft)
                 {
@@ -149,20 +150,35 @@ public class CarController : MonoBehaviour
                 }
                 AddForce();
             }
+
+            if (tag.tagValue == "Light")
+            {
+                GameObject light = collision.gameObject;
+                LightController lightController = light.GetComponent<LightController>();
+                if (lightController.type == TypeLight.GREEN)
+                {
+                    Debug.Log("Light is Green");
+                    
+                }
+                else if (lightController.type == TypeLight.RED)
+                {
+                    Debug.Log("Light is Red");
+                    GameManager.instance.ShakeCam(0.2f,0.1f);
+                }
+            }
         }
         if (type == TypeAI.BOT)
         {
-           
+            GameManager.instance.ShakeCam(0.2f,0.1f);
         }
         else if (type == TypeAI.PLAYER)
         {
             carCurrentTween.Kill();
             carFakeCurrentTwwen.Kill();
             rotateTween.Kill();
-           /// transform.DOKill();
-           // carFake.transform.DOKill();
             isRotate = false;
             GameManager.instance.setIsAccident(true);
+            GameManager.instance.ShakeCam(0.2f,0.1f);
         }
 
     }
@@ -171,4 +187,5 @@ public class CarController : MonoBehaviour
         transform.DOMove(transform.position + direct * 0.2f, 0.15f);
     }
 
+   
 }
