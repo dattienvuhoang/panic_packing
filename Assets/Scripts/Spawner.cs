@@ -7,9 +7,9 @@ public class Spawner : MonoBehaviour
 {
     public int indexLevel;
     public SpawnCar spawnCarData;
-    public GameObject carPrefab, carFakePrefab, linePrefab, lightPrefab;
+    public GameObject carPrefab, carFakePrefab, linePrefab, lightPrefab, barrierPrefab;
     public GameObject emptyObject;
-    public Sprite spCarLot;
+    public Sprite spCarLot, spCarRed, spCarPurple;
     private void Awake()
     {
         
@@ -31,11 +31,16 @@ public class Spawner : MonoBehaviour
             spawnCarData.levels[indexLevel].carInfo[i].car = carPrefab; 
             spawnCarData.levels[indexLevel].carInfo[i].carFake = carFakePrefab;
             spawnCarData.levels[indexLevel].carInfo[i].line = linePrefab;
-            
+            spawnCarData.levels[indexLevel].carInfo[i].barrier = barrierPrefab;
 
             // Instantiate cac object
             GameObject car = Instantiate(spawnCarData.levels[indexLevel].carInfo[i].car, spawnCarData.levels[indexLevel].carInfo[i].carPos, Quaternion.identity);
             GameObject carFake = Instantiate(spawnCarData.levels[indexLevel].carInfo[i].carFake, spawnCarData.levels[indexLevel].carInfo[i].carPos, Quaternion.identity);
+            if (spawnCarData.levels[indexLevel].carInfo[i].barriers.Count != 0)
+            {
+                GameObject barrier = Instantiate(spawnCarData.levels[indexLevel].carInfo[i].barrier,spawnCarData.levels[indexLevel].carInfo[i].barriers[0].barrierPosition,Quaternion.identity);
+                barrier.transform.eulerAngles = spawnCarData.levels[indexLevel].carInfo[i].barriers[0].barrierRotation;
+            }
             GameObject line = Instantiate(spawnCarData.levels[indexLevel].carInfo[i].line, spawnCarData.levels[indexLevel].carInfo[i].carPos, Quaternion.identity);
             if (spawnCarData.levels[indexLevel].carInfo[i].lightPos.Count >0 )
             {
@@ -45,10 +50,27 @@ public class Spawner : MonoBehaviour
             }
             //  
             car.name = spawnCarData.levels[indexLevel].carInfo[i].carName;
+            
             carFake.name = spawnCarData.levels[indexLevel].carInfo[i].carName + "Fake";
             // 
             CarController carController = car.GetComponent<CarController>();
             carController.carFake = carFake;
+            carController.color = spawnCarData.levels[indexLevel].carInfo[i].color;
+            switch (carController.color)
+            {
+                case ColorCar.RED:
+                {
+                    car.tag = "CarRed";
+                    car.transform.GetChild(0).transform.GetComponent<SpriteRenderer>().sprite = spCarRed;
+                    break;
+                }
+                case ColorCar.PURPLE:
+                {
+                    car.tag = "CarPurple";
+                    car.transform.GetChild(0).transform.GetComponent<SpriteRenderer>().sprite = spCarPurple;
+                    break;
+                }
+            }
             //carController.listPos = spawnCar[indexLevel].carInfo[i].points;
 
             Line lineCar = carFake.GetComponent<Line>();

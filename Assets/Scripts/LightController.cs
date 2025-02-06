@@ -10,11 +10,11 @@ public enum TypeLight
 public class LightController : MonoBehaviour
 {
     public TypeLight type;
-    public BoxCollider2D box;
+    public Collider2D box;
 
     private void Start()
     {
-        box = GetComponent<BoxCollider2D>();
+        box = GetComponent<Collider2D>();
     }
 
     private void Update()

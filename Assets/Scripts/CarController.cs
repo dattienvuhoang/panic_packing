@@ -12,11 +12,18 @@ public enum TypeAI
     PLAYER, BOT
 };
 
+public enum ColorCar
+{
+    YELLOW,
+    RED,
+    PURPLE
+};
 
 public class CarController : MonoBehaviour
 {
     public GameObject carFake;
     public TypeAI type;
+    public ColorCar color;
     public List<Transform> listPos;
     //public List<Vector3> listPos;
     public List<Direction> listDirection;
@@ -25,7 +32,9 @@ public class CarController : MonoBehaviour
     public int index, count;
     public Vector3 direct;
     public Coroutine stop;
-    public bool isLight = false;
+    public bool isLight = false, isBarrier = false;
+    GameObject barrier; 
+    public List<Barrier> barriers;
     Tween carCurrentTween, carFakeCurrentTwwen, rotateTween ;
     private void Start()
     {
@@ -36,6 +45,11 @@ public class CarController : MonoBehaviour
     {
         if (isMove)
         {
+            if (isBarrier == true)
+            {
+                barrier.SetActive(false);
+                isBarrier = false;
+            }
             if (index < count)
             {
                 isMove = false;
@@ -53,7 +67,19 @@ public class CarController : MonoBehaviour
                 float timeCar = Vector3.Distance(transform.position, listPos[index].position) / GameManager.instance.speedRun;
                 //Debug.Log("Time Car: " + timeCar);
                 carCurrentTween = transform.DOMove(listPos[index].position, timeCar).SetEase(Ease.Linear);
-                carFakeCurrentTwwen = carFake.transform.DOMove(listPos[index].position, timeCar-0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                /*carFakeCurrentTwwen = carFake.transform.DOMove(listPos[index].position, timeCar-0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                {
+                    line.DelPoint();
+                    if (line.points.Count == 1)
+                    {
+                        type = TypeAI.BOT;
+                        if (!isLight)
+                        {
+                            GameManager.instance.ChangeLight();
+                        }
+                    }
+                });*/ 
+                carFakeCurrentTwwen = carFake.transform.DOMove(listPos[index].position, timeCar).SetEase(Ease.Linear).OnComplete(() =>
                 {
                     line.DelPoint();
                     if (line.points.Count == 1)
@@ -107,6 +133,11 @@ public class CarController : MonoBehaviour
     public void Move()
     {
         isMove = true;
+        if (isBarrier == true)
+        {
+            barrier.SetActive(false);
+            isBarrier = false;
+        }
     }
     /*public void Rotate()
     {
@@ -166,15 +197,28 @@ public class CarController : MonoBehaviour
                     GameManager.instance.ShakeCam(0.2f,0.1f);
                 }
             }
+
+            if (tag.tagValue == "Barrier")
+            {
+                Debug.Log("Barrier Hit ");
+                barrier = collision.gameObject;
+                Debug.Log(barrier.name);
+                carCurrentTween.Kill();
+                carFakeCurrentTwwen.Kill();
+                //rotateTween.Kill();
+                isMove = false;
+                isBarrier = true;
+            }
         }
-        if (type == TypeAI.BOT)
+        if (type == TypeAI.BOT && !isBarrier)
         {
             GameManager.instance.ShakeCam(0.2f,0.1f);
+            Debug.Log("Shake car");
         }
-        else if (type == TypeAI.PLAYER)
+        else if (type == TypeAI.PLAYER && !isBarrier)
         {
-            carCurrentTween.Kill();
             carFakeCurrentTwwen.Kill();
+            carCurrentTween.Kill();
             rotateTween.Kill();
             isRotate = false;
             GameManager.instance.setIsAccident(true);

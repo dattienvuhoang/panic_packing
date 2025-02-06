@@ -48,9 +48,49 @@ public class GameManager : MonoBehaviour
                 TagGameObject tag = car.GetComponent<TagGameObject>();
                 if (tag != null && tag.tagValue == "Car")
                 {
-                    CarController carController = car.GetComponent<CarController>();
+                    // ----------- di chuyen 1 xe ------------
+                    /*CarController carController = car.GetComponent<CarController>();
                     carController.isMove = true;
-                    carController.type = TypeAI.PLAYER;
+                    carController.type = TypeAI.PLAYER;*/
+                    
+                    // di chuyen nhieu xe
+                    CarController carController = car.GetComponent<CarController>();
+                    ColorCar color = carController.color;
+                    switch (color)
+                    {
+                        case ColorCar.YELLOW:
+                        {
+                            carController.isMove = true;
+                            carController.type = TypeAI.PLAYER;
+                            break;
+                        }
+                        case ColorCar.RED:
+                        {
+                            Debug.Log("Car is red");
+                            GameObject[] listCar = GameObject.FindGameObjectsWithTag("CarRed");
+                            for (int i = 0; i < listCar.Length; i++)
+                            {
+                                Debug.Log("Run car" + listCar[i].name);
+                                CarController controller = listCar[i].GetComponent<CarController>();
+                                controller.type = TypeAI.PLAYER;
+                                controller.isMove = true;
+                            }
+                            break;
+                        }
+                        case ColorCar.PURPLE:
+                        {
+                            Debug.Log("Car is purple");
+                            GameObject[] listCar = GameObject.FindGameObjectsWithTag("CarPurple");
+                            for (int i = 0; i < listCar.Length; i++)
+                            {
+                                CarController controller = listCar[i].GetComponent<CarController>();
+                                controller.type = TypeAI.PLAYER;
+                                controller.isMove = true;
+                            }
+                            break;
+                        }
+
+                    }
                 }
             }
         }
@@ -62,7 +102,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Next Level");
             indexLevel++;
             PlayerPrefs.SetInt("indexLevel", indexLevel);
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("GamePlay");
         }
         else
         {
@@ -77,7 +117,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Back Level");
             indexLevel--;
             PlayerPrefs.SetInt("indexLevel", indexLevel);
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("GamePlay");
         }
         else
         {

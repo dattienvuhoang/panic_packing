@@ -24,7 +24,7 @@ public class UIController : MonoBehaviour
     }
     public void Replay()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("GamePlay");
     }
     public void NewGame()
     {

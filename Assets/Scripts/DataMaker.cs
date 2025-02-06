@@ -11,7 +11,7 @@ public class DataMaker : MonoBehaviour
     public void SaveData()
     {
         data.levels[indexLevel].carInfo.Clear();    
-        for (int i = 0; i < cars.Count; i++)
+        /*for (int i = 0; i < cars.Count; i++)
         {
             CarInfo carInfo = new CarInfo();
             data.levels[indexLevel].carInfo.Add(carInfo);
@@ -24,7 +24,34 @@ public class DataMaker : MonoBehaviour
                 data.levels[indexLevel].carInfo[i].points.Add(cars[i].transform.GetChild(j).gameObject.transform.position);
                 
             }
+        }*/
+        for (int i = 0; i < cars.Count; i++)
+        {
+            CarInfo carInfo = new CarInfo();
+            data.levels[indexLevel].carInfo.Add(carInfo);
+            Debug.Log( data.levels[indexLevel].carInfo.Count);
+            data.levels[indexLevel].carInfo[i].carName = "Car " + (i + 1);  
+            data.levels[indexLevel].carInfo[i].carPos = cars[i].transform.position; 
+            data.levels[indexLevel].carInfo[i].points = new List<Vector3>();
+           
+            //data.levels[indexLevel].carInfo[i].diection = new List<Direction>();
+            CarController carController = cars[i].GetComponent<CarController>();
+            for (int j = 0; j < carController.listPos.Count; j++)
+            {
+                data.levels[indexLevel].carInfo[i].points.Add(carController.listPos[j].transform.position);
+            }
+
+            if (carController.barriers.Count > 0)
+            {
+                data.levels[indexLevel].carInfo[i].barriers = new List<Barrier>();
+                data.levels[indexLevel].carInfo[i].barriers.Add(new Barrier());
+                data.levels[indexLevel].carInfo[i].barriers[0].barrierPosition = carController.barriers[0].barrierPosition;
+                data.levels[indexLevel].carInfo[i].barriers[0].barrierRotation = carController.barriers[0].barrierRotation;
+            }
+            
+            
         }
+        
     }
 }
 #if UNITY_EDITOR
