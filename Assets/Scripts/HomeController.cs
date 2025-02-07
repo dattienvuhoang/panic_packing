@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -11,6 +9,9 @@ public class HomeController : MonoBehaviour
 {
     public RectTransform rectNameGame;
     public Button btnPlay;
+    public Slider slider;
+    public TMP_Text txtSlider;
+    public GameObject sliderObject;
     private Tween tween;
     private void Start()
     {
@@ -29,7 +30,22 @@ public class HomeController : MonoBehaviour
     public void PlayGame()
     {
         rectNameGame.transform.DOKill();
-        SceneManager.LoadScene("GamePlay");
+        //SceneManager.LoadScene("GamePlay");
+        LoadingScene(); 
     }
+
+    public void LoadingScene()
+    {
+        btnPlay.gameObject.SetActive(false);
+        sliderObject.SetActive(true);
+        slider.DOValue(.99f, 1).OnUpdate(()=>
+        {
+            txtSlider.text = Math.Round((slider.value*100)).ToString() + "%";
+        }). OnComplete(() =>
+        {
+            SceneManager.LoadScene("GamePlay");
+        });
+    }
+
     
 }

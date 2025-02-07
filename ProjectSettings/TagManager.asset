@@ -7,6 +7,8 @@ TagManager:
   - Light
   - CarRed
   - CarPurple
+  - Missile
+  - Car
   layers:
   - Default
   - TransparentFX
@@ -43,4 +45,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 209156883
     locked: 0

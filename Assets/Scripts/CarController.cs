@@ -36,6 +36,7 @@ public class CarController : MonoBehaviour
     GameObject barrier; 
     public List<Barrier> barriers;
     Tween carCurrentTween, carFakeCurrentTwwen, rotateTween ;
+    bool isWinCar = false;
     private void Start()
     {
         count = listPos.Count;
@@ -94,6 +95,7 @@ public class CarController : MonoBehaviour
             }
             else
             {
+                
                 return;
             }
         }
@@ -123,6 +125,11 @@ public class CarController : MonoBehaviour
                 }
                 else
                 {
+                    if (!isWinCar)
+                    {
+                        isWinCar = true;
+                        GameManager.instance.UpNumberCar();
+                    }
                     isRotate = false;
                 }
 
@@ -180,6 +187,8 @@ public class CarController : MonoBehaviour
                     transform.DORotate(new Vector3(0, 0, -15), 0.1f);
                 }
                 AddForce();
+                AudioManager.instance.PlaySound();
+                UIController.instance.ShowLose();
             }
 
             if (tag.tagValue == "Light")
@@ -195,6 +204,8 @@ public class CarController : MonoBehaviour
                 {
                     Debug.Log("Light is Red");
                     GameManager.instance.ShakeCam(0.2f,0.1f);
+                    AudioManager.instance.PlaySound();
+                    UIController.instance.ShowLose();
                 }
             }
 

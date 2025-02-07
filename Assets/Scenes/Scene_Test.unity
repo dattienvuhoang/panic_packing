@@ -1156,7 +1156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: d6c2bc827ccd51a488204fc0657033cb, type: 2}
   cars: []
-  indexLevel: 42
+  indexLevel: 49
 --- !u!1 &1172033064
 GameObject:
   m_ObjectHideFlags: 0
@@ -1214,7 +1214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 64503cd00d546ac42b90d11534466cc2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 30a169544cd1a1b4593852922eb8c34e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

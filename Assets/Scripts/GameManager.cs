@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> lights;
-    
     public LayerMask layerCar;
     public GameObject car;
     public int indexLevel;
@@ -15,15 +14,29 @@ public class GameManager : MonoBehaviour
     public float speedRun;
     private Camera cam;
     private GameObject[] _gameObjects;
+    public int numberCar;
+    private int currentCar;
+    public bool isWin;
+    public bool isSound, isMusic;
+    private bool isUION;
+
+    /*[Header("Audio")] public AudioSource AudioSource;
+    public AudioClip soundCLip, musicClip;*/
     public static GameManager instance;
     private void Awake()
     {
         isAccident = false;
         instance = this;
         indexLevel = PlayerPrefs.GetInt("indexLevel");
+        // Test sound 
+        isMusic = true;
+        isSound = true;
+        isUION = false;
     }
     private void Start()
     {
+        isWin = false;
+        currentCar = 0;
         Application.targetFrameRate = 120;
         cam = Camera.main;
        _gameObjects = GameObject.FindGameObjectsWithTag("Light");
@@ -31,14 +44,24 @@ public class GameManager : MonoBehaviour
        {
            lights.Add(o);
        }
+       GameObject[] cars = GameObject.FindGameObjectsWithTag("Car");
+       GameObject[] carRed = GameObject.FindGameObjectsWithTag("CarRed");
+       GameObject[] carPurple = GameObject.FindGameObjectsWithTag("CarPurple");
+       numberCar = cars.Length + carRed.Length + carPurple.Length;
+       Debug.Log(numberCar);
     }
     private void Update()
     {
         Click();
+        if (currentCar == numberCar && !isWin)
+        {
+            isWin = true;
+            UIController.instance.ShowWin();    
+        }
     }
     private void Click()
     {
-        if (Input.GetMouseButtonDown(0) && !isAccident)
+        if (Input.GetMouseButtonDown(0) && !isAccident && !isUION)
         {
             Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward, Mathf.Infinity, layerCar);
@@ -99,6 +122,7 @@ public class GameManager : MonoBehaviour
     {
         if (indexLevel < GlobalData.MAXLEVEL - 1)
         {
+            GameManager.instance.SetUION(false);
             Debug.Log("Next Level");
             indexLevel++;
             PlayerPrefs.SetInt("indexLevel", indexLevel);
@@ -162,5 +186,16 @@ public class GameManager : MonoBehaviour
         {
             lights[i].GetComponent<LightController>().ChangeLight();    
         }
+    }
+
+    public void UpNumberCar()
+    {
+        currentCar++;
+        Debug.Log("Current car "  + currentCar);
+    }
+
+    public void SetUION(bool set)
+    {
+        isUION = set;
     }
 }
