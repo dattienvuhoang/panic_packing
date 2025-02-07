@@ -62,6 +62,25 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
+        bool music = GameManager.instance.isMusic;
+        if (music)
+        {
+            btnMusic.GetComponent<Image>().sprite = spSoundOn;
+        }
+        else
+        {
+            btnMusic.GetComponent<Image>().sprite = spSoundOff;
+        }
+        bool sound = GameManager.instance.isSound;
+        if (sound)
+        {
+            btnSound.GetComponent<Image>().sprite = spSoundOn;
+        }
+        else
+        {
+            btnSound.GetComponent<Image>().sprite = spSoundOff;
+        }
+        
         // Setting
         btnReplay.onClick.AddListener(() => Replay());
         btnSetting.onClick.AddListener(()=> OpenSetting());
@@ -142,15 +161,19 @@ public class UIController : MonoBehaviour
         {
             Debug.Log("222");   
             GameManager.instance.isMusic = false;
+            PlayerPrefs.SetInt("Music", 0);
             //isSound = false;
             btnMusic.GetComponent<Image>().sprite = spSoundOff;
+            AudioManager.instance.StopMusic();
         }
         else
         {
             Debug.Log("333");
             GameManager.instance.isMusic = true;
             btnMusic.GetComponent<Image>().sprite = spSoundOn;
-  
+            PlayerPrefs.SetInt("Music", 1);
+            AudioManager.instance.PlayMusic();
+
         }
     }
 

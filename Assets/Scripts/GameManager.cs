@@ -32,6 +32,25 @@ public class GameManager : MonoBehaviour
         isMusic = true;
         isSound = true;
         isUION = false;
+
+        if (!PlayerPrefs.HasKey("Music"))
+        {
+            isMusic = true;
+            PlayerPrefs.SetInt("Music", 1);
+        }
+        else
+        {
+            int music = PlayerPrefs.GetInt("Music");
+            if (music == 1)
+            {
+                isMusic = true;
+            }
+            else
+            {
+                isMusic = false;
+            }
+                
+        }
     }
     private void Start()
     {
