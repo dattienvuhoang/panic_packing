@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> lights;
     public LayerMask layerCar;
     public GameObject car;
-    public int indexLevel;
+    public int indexLevel, coins;
     public bool isAccident;
     public float speedRun;
     private Camera cam;
@@ -20,7 +21,8 @@ public class GameManager : MonoBehaviour
     public bool isSound, isMusic;
     private bool isUION;
 
-    /*[Header("Audio")] public AudioSource AudioSource;
+    private UserData _userData;
+     /*[Header("Audio")] public AudioSource AudioSource;
     public AudioClip soundCLip, musicClip;*/
     public static GameManager instance;
     private void Awake()
@@ -32,7 +34,7 @@ public class GameManager : MonoBehaviour
         isMusic = true;
         isSound = true;
         isUION = false;
-
+        LoadData();
         if (!PlayerPrefs.HasKey("Music"))
         {
             isMusic = true;
@@ -50,6 +52,34 @@ public class GameManager : MonoBehaviour
                 isMusic = false;
             }
                 
+        }
+        if (!PlayerPrefs.HasKey("Sound"))
+        {
+            isSound = true;
+            PlayerPrefs.SetInt("Sound", 1);
+        }
+        else
+        {
+            int sound = PlayerPrefs.GetInt("Sound");
+            if (sound == 1)
+            {
+                isSound = true;
+            }
+            else
+            {
+                isSound = false;
+            }
+                
+        }
+
+        if (!PlayerPrefs.HasKey("Coins"))
+        {
+            PlayerPrefs.SetInt("Coins", 0);
+            coins = PlayerPrefs.GetInt("Coins");
+        }
+        else
+        {
+            coins = PlayerPrefs.GetInt("Coins");
         }
     }
     private void Start()
@@ -217,4 +247,49 @@ public class GameManager : MonoBehaviour
     {
         isUION = set;
     }
+
+    public void ChangeCoin(int coin)
+    {
+        coins -= coin;
+    }
+
+    public UserData LoadData()
+    {
+        if (PlayerPrefs.HasKey("UserData"))
+        {
+            string json = PlayerPrefs.GetString("PlayerData");
+            UserData data = JsonUtility.FromJson<UserData>(json);
+            Debug.Log("Data loaded from PlayerPrefs: " + json);
+            return data;
+        }
+        else
+        {
+           Debug.LogError("Ngu");
+           _userData = new UserData();
+           _userData.indexLevel = 0;
+           _userData.coin = 0;
+           _userData.indexBG = 0;
+           _userData.indexSkin = 0;
+           _userData.isMusic = true;
+           _userData.isSound = true;
+           for (int i = 0; i < _userData.background.Count; i++)
+           {
+               _userData.background[i] = 0;
+           }
+           for (int i = 0; i < _userData.skin.Count(); i++)
+           {
+               _userData.skin[i] = 0;
+           }
+           SaveData(_userData);
+           return _userData;
+        }
+    }
+    public void SaveData(UserData data)
+    {
+        string json = JsonUtility.ToJson(data, true);
+        Debug.Log(json);
+        PlayerPrefs.SetString("PlayerData", json);
+        PlayerPrefs.Save();
+    }
+    
 }

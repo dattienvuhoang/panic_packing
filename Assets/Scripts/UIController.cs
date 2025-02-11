@@ -43,8 +43,9 @@ public class UIController : MonoBehaviour
     [Header("UI Win")] 
     public GameObject pnWin;
     public Button btnNextLevel, btnOpenShop;
-    public CanvasGroup cvWin;
-    public RectTransform rectWin;
+    public CanvasGroup cvWin, cvCoin;
+    public RectTransform rectWin, rectCoin;
+    
     [Header("UI Lose")]
     public CanvasGroup cvLose;
     public RectTransform rectLose;
@@ -54,7 +55,9 @@ public class UIController : MonoBehaviour
     [Header("UI Shop")] public Button btnBackground;
     public Button btnSkins, btnNoAds;
     public GameObject pnBackground, pnSkin, pnNoAds;
-
+    public TMP_Text txtCoin;
+    public int coin;
+    
     private void Awake()
     {
         instance = this;
@@ -62,6 +65,8 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
+        coin = GameManager.instance.coins;
+        txtCoin.text = coin.ToString();
         bool music = GameManager.instance.isMusic;
         if (music)
         {
@@ -119,10 +124,20 @@ public class UIController : MonoBehaviour
 
     public void ShowWin()
     {
+        coin += 20;
+        PlayerPrefs.SetInt("Coins", coin);
+        txtCoin.text = coin.ToString();
         GameManager.instance.SetUION(true);
         pnWin.SetActive(true);
         rectWin.DOScale(1,0.5f).SetEase(Ease.InBack);
-        cvWin.DOFade(1, 0.5f);
+        cvWin.DOFade(1, 0.5f).OnComplete(() =>
+        {
+            rectCoin.DOAnchorPosY(-250, 0.5f);
+            cvCoin.DOFade(0, 0.5f).OnComplete(() =>
+            {
+                rectCoin.DOAnchorPosY(-320, 0.25f);
+            });
+        });
     }
 
     public void ShowLose()
